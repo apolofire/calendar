@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Calendário de Plantões por Equipe</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #calendar {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    /* Cores das equipes */
+    .equipe-amarela {
+      background-color: #FFF176 !important;
+    }
+    .equipe-azul {
+      background-color: #90CAF9 !important;
+    }
+    .equipe-verde {
+      background-color: #A5D6A7 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Calendário de Plantões por Equipe</h2>
+  <div id="calendar"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const calendarEl = document.getElementById('calendar');
+
+      // Data de referência: 27 de junho de 2025 (plantão Amarela)
+      const referenceDate = new Date(2025, 5, 27);
+      const msPerDay = 24 * 60 * 60 * 1000;
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'pt-br',
+
+        // esconde dias não pertencentes ao mês atual
+        showNonCurrentDates: false,
+        // renderiza somente as semanas necessárias
+        fixedWeekCount: false,
+
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: ''
+        },
+
+        // Aplica classes a cada célula de dia EM TODAS AS RENDERIZAÇÕES
+        dayCellClassNames: function(info) {
+          // somente pinta dias do mês atual
+          if (info.isOther) {
+            return [];
+          }
+
+          // calcula diferença em dias a partir da data de referência
+          const today = new Date(info.date.getFullYear(), info.date.getMonth(), info.date.getDate());
+          const daysSinceRef = Math.floor((today - referenceDate) / msPerDay);
+          // ciclo 0=amarela, 1=azul, 2=verde
+          const idx = ((daysSinceRef % 3) + 3) % 3;
+          const classes = ['equipe-amarela', 'equipe-azul', 'equipe-verde'];
+          return [ classes[idx] ];
+        }
+      });
+
+      calendar.render();
+    });
+  </script>
+
+</body>
+</html>
+
+
